@@ -1,0 +1,10 @@
+{
+  "name": "local-asr",
+  "displayName": "本地转写引擎（faster-whisper / FunASR 一键安装）",
+  "version": "1.4.0",
+  "description": "一键在用户电脑上安装并启动本地语音转写服务（OpenAI 兼容接口）。引擎可选 faster-whisper（多语言）或 FunASR Paraformer（中文优化），为会议助手等插件的 local 转写通道提供引擎。全程本地运行，录音不出本机。",
+  "author": {
+    "name": "Ruodao"
+  },
+  "ui": "./ui.json"
+}

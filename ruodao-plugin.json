@@ -1,0 +1,113 @@
+{
+  "id": "com.ruodao.local-asr",
+  "name": "本地转写引擎（faster-whisper / FunASR 一键安装）",
+  "version": "1.4.0",
+  "apiVersion": ">=0.1.0 <0.2.0",
+  "description": "一键安装/启动/停止本地转写服务（OpenAI 兼容 /v1/audio/transcriptions），引擎可选 faster-whisper（多语言）或 FunASR Paraformer（中文优化），供会议助手 local 转写通道使用。",
+  "requires": {
+    "capabilities": {
+      "required": {
+        "commands": "0.1.0",
+        "code.execute": "0.1.0"
+      }
+    }
+  },
+  "permissions": [
+    "process",
+    "network"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "id": "com.ruodao.local-asr.status",
+        "title": "本地转写引擎状态",
+        "description": "检查本地转写引擎是否已安装、服务是否在运行、两个引擎各自的安装状态，并返回安装阶段与日志尾部供工作台展示。",
+        "action": {
+          "type": "process",
+          "command": "node",
+          "args": [
+            "bin/local-asr.mjs",
+            "status"
+          ],
+          "cwd": ".",
+          "timeoutMs": 15000
+        }
+      },
+      {
+        "id": "com.ruodao.local-asr.install",
+        "title": "安装本地转写引擎（首次约 10-20 分钟）",
+        "description": "自动创建 Python 虚拟环境、安装转写依赖、下载模型。引擎由配置 RUODAO_ASR_ENGINE 决定：whisper（faster-whisper，多语言，约 500MB）或 funasr（FunASR Paraformer，中文优化，无 torch，约 230MB）。已安装则跳过。",
+        "action": {
+          "type": "process",
+          "command": "node",
+          "args": [
+            "bin/local-asr.mjs",
+            "install"
+          ],
+          "cwd": ".",
+          "timeoutMs": 3600000
+        }
+      },
+      {
+        "id": "com.ruodao.local-asr.start",
+        "title": "启动本地转写服务",
+        "description": "后台启动本地转写服务（默认 127.0.0.1:8000），并等待健康检查通过。已在运行则直接返回。",
+        "action": {
+          "type": "process",
+          "command": "node",
+          "args": [
+            "bin/local-asr.mjs",
+            "start"
+          ],
+          "cwd": ".",
+          "timeoutMs": 120000
+        }
+      },
+      {
+        "id": "com.ruodao.local-asr.stop",
+        "title": "停止本地转写服务",
+        "description": "停止后台运行的本地转写服务。",
+        "action": {
+          "type": "process",
+          "command": "node",
+          "args": [
+            "bin/local-asr.mjs",
+            "stop"
+          ],
+          "cwd": ".",
+          "timeoutMs": 15000
+        }
+      },
+      {
+        "id": "com.ruodao.local-asr.apply-config",
+        "title": "一键配置会议助手（自动填好转写设置）",
+        "description": "自动探测麦克风与系统内录设备，把会议助手的转写通道、本地服务地址、模型名、录音时长等一次性填好，并确保本地转写服务已启动。可用参数 cloud 切回云端。",
+        "action": {
+          "type": "process",
+          "command": "node",
+          "args": [
+            "bin/local-asr.mjs",
+            "apply-config"
+          ],
+          "cwd": ".",
+          "timeoutMs": 120000
+        }
+      },
+      {
+        "id": "com.ruodao.local-asr.test",
+        "title": "转写自检（生成测试音频并转写）",
+        "description": "生成一段测试音频发送到本地转写服务，验证 /v1/audio/transcriptions 接口可用。",
+        "action": {
+          "type": "process",
+          "command": "node",
+          "args": [
+            "bin/local-asr.mjs",
+            "test"
+          ],
+          "cwd": ".",
+          "timeoutMs": 120000
+        }
+      }
+    ]
+  }
+}

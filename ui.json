@@ -1,0 +1,14 @@
+{
+  "route": "local-asr",
+  "label": "本地转写引擎",
+  "description": "一键安装/启动本地转写服务（OpenAI 兼容 /v1），引擎可选 faster-whisper（多语言）或 FunASR Paraformer（中文优化），录音不出本机。装好后把会议助手的「转写通道」设为 local 即可。",
+  "icon": "Cpu",
+  "version": "1.4.0",
+  "author": "Ruodao",
+  "capabilities": ["commands", "code.execute", "local-stt"],
+  "configFields": [
+    { "key": "RUODAO_ASR_ENGINE", "label": "转写引擎（whisper=多语言 / funasr=中文优化）", "placeholder": "whisper", "secret": false },
+    { "key": "RUODAO_ASR_PORT", "label": "本地转写服务端口", "placeholder": "8000", "secret": false },
+    { "key": "RUODAO_ASR_MODEL", "label": "whisper 引擎模型（small/base/medium）", "placeholder": "small", "secret": false }
+  ]
+}

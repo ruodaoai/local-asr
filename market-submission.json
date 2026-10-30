@@ -1,0 +1,35 @@
+{
+  "displayName": "本地转写引擎",
+  "slug": "local-asr",
+  "summary": "一键给电脑装一个本地语音转写服务（OpenAI 兼容 /v1/audio/transcriptions）：可选 faster-whisper 多语言，或 FunASR Paraformer 中文优化（onnxruntime 推理、无 torch、普通核显可跑）。装好即可给会议助手当本地转写通道，录音不出本机。",
+  "description": "会议助手要「本地转写」，缺的不是开关而是一个能跑起来的引擎。这个插件负责把引擎装好、启动好、配置好。\n\n【两个引擎二选一】\n• faster-whisper（默认）：Systran/faster-whisper small / base / medium，多语言通用，模型 140MB–1.5GB，从 HuggingFace 下载；\n• FunASR Paraformer（中文推荐）：iic/speech_paraformer-large 中文模型，约 230MB，onnxruntime int8 量化推理，不装 torch，普通核显甚至无独显的机器都能跑；模型走 ModelScope 国内直连，下载快。\n两个引擎各自独立的虚拟环境与模型目录，互不影响，可以都装着按需切换。\n\n【四步就能用】\n1. 选引擎（whisper / funasr）；\n2. 点「安装本地转写引擎」——建 venv、装依赖、下模型，幂等，中断了能续装，进度与日志实时可见；\n3. 点「启动本地转写服务」——后台拉起并等健康检查通过；\n4. 点「一键配置会议助手」——自动探测麦克风与内录设备、把转写通道切到 local 并写好地址与模型名，一步到位。\n\n【接口是标准的】\n服务地址 http://127.0.0.1:8000/v1（端口可改），模型名统一 whisper-1，接口 POST /v1/audio/transcriptions，OpenAI 兼容——任何支持该协议的工具都能直接调用，不只有会议助手。\n\n【装在哪、占多少】\n默认安装目录 D:\\ruodao-local-asr（无 D 盘自动回退用户目录），可用 RUODAO_ASR_HOME 覆盖；whisper 模型规格、Python 解释器（3.9–3.13）都可指定，找不到 Python 时状态页会说明。\n\n【隐私】\n推理全部在本机完成，音频不离开这台电脑；只有安装阶段需要联网下载依赖与模型。\n\n命令：install / start / stop / status / test / apply-config，状态页会显示双引擎安装状态、安装阶段、运行引擎与日志尾部，出问题不用猜。",
+  "author": "Ruodao",
+  "category": "Utilities",
+  "tags": [
+    "语音转写",
+    "本地",
+    "whisper",
+    "FunASR",
+    "会议",
+    "隐私",
+    "离线",
+    "字幕"
+  ],
+  "version": "1.4.0",
+  "repositoryUrl": "",
+  "sourceRef": "",
+  "pluginPath": "",
+  "permissions": [
+    "process",
+    "network"
+  ],
+  "capabilities": [
+    "commands",
+    "code.execute",
+    "local-stt"
+  ],
+  "hasMcpServers": false,
+  "hasSkills": false,
+  "changelog": "1.4.0 双引擎（faster-whisper / FunASR Paraformer），支持一键配置会议助手与转写自检。",
+  "readme": "# local-asr —— 本地转写引擎插件（双引擎）\n\n一键在用户电脑上安装并运行本地语音转写服务（OpenAI 兼容接口），录音不出本机。**引擎二选一**，由配置项 `RUODAO_ASR_ENGINE` 决定：\n\n| 引擎 | 值 | 模型 | 体积 | 特点 |\n|---|---|---|---|---|\n| faster-whisper（默认） | `whisper` | Systran/faster-whisper-small/base/medium | ≈140MB-1.5GB | 多语言通用，HuggingFace 下载 |\n| **FunASR Paraformer（中文推荐）** | `funasr` | iic/speech_paraformer-large…-onnx | ≈230MB | 中文效果开源最强之一，onnxruntime CPU 推理、**无 torch 依赖**，ModelScope 国内直连下载快 |\n\n## 用途\n\n为 `meeting-assistant`（会议助手）等插件的 **local 转写通道** 提供引擎：\n\n- 服务地址：`http://127.0.0.1:8000/v1`（端口可配）\n- 模型名：`whisper-1`（FunASR 服务对该参数不敏感，统一接受，会议助手零改动）\n- 接口：`POST /v1/audio/transcriptions`（OpenAI 兼容）\n\n## 用户流程（傻瓜化）\n\n1. 在插件配置里选引擎（`RUODAO_ASR_ENGINE` = `whisper` 或 `funasr`，默认 `whisper`）\n2. 执行 **「安装本地转写引擎」**（幂等，首次约 10-20 分钟含模型下载）\n3. 执行 **「启动本地转写服务」**\n4. 打开会议助手设置：转写通道设为 `local`，服务地址/模型名按默认即可；或直接点 **「一键配置会议助手」**\n5. 执行 **「转写自检」** 验证接口可用\n\n## 配置项\n\n| 环境变量 | 默认 | 说明 |\n|---|---|---|\n| `RUODAO_ASR_ENGINE` | `whisper` | 引擎选择：`whisper` / `funasr` |\n| `RUODAO_ASR_PORT` | `8000` | 服务端口（两引擎共用） |\n| `RUODAO_ASR_MODEL` | `small` | whisper 引擎模型规格 small / base / medium |\n| `RUODAO_ASR_HOME` | `D:\\ruodao-local-asr`（无 D 盘回退用户目录） | 安装目录 |\n| `RUODAO_ASR_PYTHON` | 自动探测 | 指定 Python 解释器（3.9-3.13） |"
+}
